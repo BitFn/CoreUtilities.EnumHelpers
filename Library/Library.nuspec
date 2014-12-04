@@ -20,6 +20,6 @@
 	</metadata>
 	<files>
 		<file src="..\*.md" target="" />
-		<file src="\bin\$Configuration$\CodeContracts\*.Contracts.dll" target="lib\net40" />
+		<file src="\bin\$Configuration$\CodeContracts\*.Contracts.dll" target="lib\portable-net40+sl50+win+wpa81+wp80" />
 	</files>
 </package>
