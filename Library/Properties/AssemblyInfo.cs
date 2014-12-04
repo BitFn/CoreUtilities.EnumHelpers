@@ -6,7 +6,7 @@ using System.Resources;
 // associated with an assembly.
 
 [assembly: AssemblyTitle("BitFn.CoreUtilities.EnumHelpers")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A portable utility library for manipulation and interaction with Enums.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Daniel Rasmussen")]
 [assembly: AssemblyProduct("BitFn.CoreUtilities.EnumHelpers")]
