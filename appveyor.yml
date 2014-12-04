@@ -19,6 +19,7 @@ configuration: Release
 
 build:
   publish_nuget: true
+  verbosity: minimal
 
 cache:
   - packages

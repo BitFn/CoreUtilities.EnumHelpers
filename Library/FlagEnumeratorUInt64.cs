@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace BitFn.CoreUtilities.EnumHelpers
@@ -8,7 +9,8 @@ namespace BitFn.CoreUtilities.EnumHelpers
 	public class FlagEnumeratorUInt64<T> : IFlagEnumerator<T> where T : struct, IComparable, IFormattable, IConvertible
 	{
 		private readonly ulong _maskOutOfRange;
-		
+
+
 		public FlagEnumeratorUInt64()
 		{
 			if (!typeof(T).IsEnum)
@@ -21,7 +23,7 @@ namespace BitFn.CoreUtilities.EnumHelpers
 			}
 			try
 			{
-				_maskOutOfRange = ~Enum.GetValues(typeof (T)).Cast<T>().Aggregate((ulong) 0, (mask, _) => mask | Convert.ToUInt64(_));
+				_maskOutOfRange = ~Enum.GetValues(typeof(T)).Cast<T>().Aggregate((ulong)0, (mask, _) => mask | Convert.ToUInt64(_));
 			}
 			catch (OverflowException ex)
 			{
@@ -47,17 +49,17 @@ namespace BitFn.CoreUtilities.EnumHelpers
 
 			if (Equals(value, default(T)) && EnumInfo.Get(default(T)) != null)
 			{
-				return new[] { default(T) };
+				return new[] {default(T)};
 			}
 
-			EnumInfo info = EnumInfo.Get(value);
+			var info = EnumInfo.Get(value);
 			if (info != null && (behavior == FlagEnumerationBehavior.ExactOrFullyFactorized ||
-								 behavior == FlagEnumerationBehavior.ExactOrFullyAggregated))
+				behavior == FlagEnumerationBehavior.ExactOrFullyAggregated))
 			{
-				return new[] { info.Value };
+				return new[] {info.Value};
 			}
 
-			IEnumerable<EnumInfo> factors = info != null
+			var factors = info != null
 				? info.Factors.Concat(new[] {info})
 				: GetAllFlags(bitmask).Select(EnumInfo.Get);
 			ISet<EnumInfo> result = new HashSet<EnumInfo>(factors);
@@ -71,7 +73,7 @@ namespace BitFn.CoreUtilities.EnumHelpers
 					break;
 				case FlagEnumerationBehavior.FullyAggregated:
 				case FlagEnumerationBehavior.ExactOrFullyAggregated:
-					foreach (var factor in result.ToList().SelectMany(_=>_.Factors))
+					foreach (var factor in result.ToList().SelectMany(_ => _.Factors))
 					{
 						result.Remove(factor);
 					}
@@ -84,9 +86,9 @@ namespace BitFn.CoreUtilities.EnumHelpers
 
 		private static IEnumerable<T> GetAllFlags(ulong bitmask, bool exclusive = false)
 		{
-			foreach (object value in Enum.GetValues(typeof(T)))
+			foreach (var value in Enum.GetValues(typeof(T)))
 			{
-				ulong valuemask = Convert.ToUInt64(value);
+				var valuemask = Convert.ToUInt64(value);
 				if (valuemask == default(ulong))
 				{
 					continue;
@@ -105,7 +107,6 @@ namespace BitFn.CoreUtilities.EnumHelpers
 		[DebuggerDisplay("{DebuggerDisplay,nq}")]
 		private sealed class EnumInfo
 		{
-
 			// ReSharper disable StaticFieldInGenericType
 			private static readonly IDictionary<T, EnumInfo> Cache = new Dictionary<T, EnumInfo>();
 			private static readonly ISet<T> ValueSet;
@@ -153,11 +154,15 @@ namespace BitFn.CoreUtilities.EnumHelpers
 			public int BitCount { get; private set; }
 			public ulong BitMask { get; private set; }
 			public IList<EnumInfo> Factors { get; private set; }
-			public bool Irreducible { get { return Factors.Count == 0; } }
+
+			public bool Irreducible
+			{
+				get { return Factors.Count == 0; }
+			}
 
 			private static int CountBits(ulong value)
 			{
-				int count = 0;
+				var count = 0;
 				while (value != 0)
 				{
 					count++;
@@ -168,14 +173,25 @@ namespace BitFn.CoreUtilities.EnumHelpers
 
 			public override bool Equals(object obj)
 			{
-				if (ReferenceEquals(null, obj)) return false;
-				if (ReferenceEquals(this, obj)) return true;
-				if (obj.GetType() != GetType()) return false;
+				if (ReferenceEquals(null, obj))
+				{
+					return false;
+				}
+				if (ReferenceEquals(this, obj))
+				{
+					return true;
+				}
+				if (obj.GetType() != GetType())
+				{
+					return false;
+				}
 				return Equals((EnumInfo)obj);
 			}
 
 			private bool Equals(EnumInfo other)
 			{
+				Contract.Requires(other != null);
+
 				return Value.Equals(other.Value);
 			}
 
@@ -198,6 +214,12 @@ namespace BitFn.CoreUtilities.EnumHelpers
 			private string DebuggerDisplay
 			{
 				get { return _name ?? ToString(); }
+			}
+
+			[ContractInvariantMethod]
+			private void ObjectInvariant()
+			{
+				Contract.Invariant(Factors != null);
 			}
 		}
 	}
