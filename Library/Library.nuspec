@@ -1,0 +1,23 @@
+﻿<?xml version="1.0"?>
+
+<package>
+	<metadata>
+		<id>$id$</id>
+		<version>$version$</version>
+		<title>$title$</title>
+		<authors>$author$</authors>
+		<owners>$author$</owners>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>$description$</description>
+		<releaseNotes>$releaseNotes$</releaseNotes>
+		<copyright>Copyright 2014</copyright>
+		<tags></tags>
+		<references>
+			<reference file="$title$.dll" />
+		</references>
+	</metadata>
+	<files>
+		<file src="..\*.md" target="" />
+		<file src="\bin\$Configuration$\CodeContracts\*.Contracts.dll" target="lib\net40" />
+	</files>
+</package>
